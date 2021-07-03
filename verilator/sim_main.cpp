@@ -209,7 +209,7 @@ int main(int argc, char** argv, char** env) {
 		// --------
 		ImGui::NewFrame();
 
-		console.Draw("Debug Log", &showDebugWindow);
+		console.Draw("Debug Log Verilator 4.204", &showDebugWindow);
 		ImGui::Begin(debugWindowTitle);
 		ImGui::SetWindowPos(debugWindowTitle, ImVec2(580, 10), ImGuiCond_Once);
 		ImGui::SetWindowSize(debugWindowTitle, ImVec2(1000, 1000), ImGuiCond_Once);
