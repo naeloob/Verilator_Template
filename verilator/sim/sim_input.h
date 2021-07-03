@@ -11,8 +11,8 @@ struct SimInput {
 public:
 
 	int inputCount = 0;
-	bool inputs[16];
-	int mappings[16];
+	bool inputs[16] = { false };
+	int mappings[16] = { 0 };
 
 	void Read();
 	int Initialise();

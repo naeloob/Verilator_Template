@@ -74,7 +74,7 @@ void SimInput::Read() {
 	}
 
 #ifdef WIN32
-	for (unsigned char k = 0; k < 256; k++) {
+	for (unsigned char k = 0; k < 255; k++) {
 		m_keyboardState_last[k] = m_keyboardState[k];
 	}
 #else

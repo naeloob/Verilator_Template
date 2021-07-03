@@ -240,7 +240,7 @@ int main(int argc, char** argv, char** env) {
 		ImGui::End();
 
 		ImGui::Begin("RAM Editor");
-		memoryEditor_hs.DrawContents(top->top__DOT__uut__DOT__hs_ram__DOT__mem, 64, 0);
+		memoryEditor_hs.DrawContents(&top->top__DOT__uut__DOT__hs_ram__DOT__mem[0], 64, 0);
 		ImGui::End();
 
 		video.UpdateTexture();
