@@ -20,6 +20,8 @@ class Vtop__Syms : public VerilatedSyms {
 
     // LOCAL STATE
     const char* __Vm_namep;
+    bool __Vm_activity;  ///< Used by trace routines to determine change occurred
+    uint32_t __Vm_baseCode;  ///< Used by trace routines when tracing multiple models
     bool __Vm_didInit;
 
     // SUBCELL STATE
@@ -35,6 +37,8 @@ class Vtop__Syms : public VerilatedSyms {
 
     // METHODS
     inline const char* name() { return __Vm_namep; }
+    void __Vserialize(VerilatedSerialize& os);
+    void __Vdeserialize(VerilatedDeserialize& os);
 
 } VL_ATTR_ALIGNED(VL_CACHE_LINE_BYTES);
 

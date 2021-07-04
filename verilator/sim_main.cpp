@@ -19,6 +19,8 @@
 
 #include "../imgui/imgui_memory_editor.h"
 
+#include <verilated_vcd_c.h> //VCD Trace Include
+
 // Debug GUI 
 // ---------
 const char* windowTitle = "Verilator Sim: Arcade-Centipede";
@@ -66,11 +68,37 @@ int multi_step_amount = 1024;
 // Verilog module
 // --------------
 Vtop* top = NULL;
+VerilatedVcdC* tfp = new VerilatedVcdC; //Trace
+bool Trace = 0;
+char Trace_Deep[3] = "99";
+char Trace_File[30] = "sim.vcd";
+char Trace_Deep_tmp[3] = "99";
+char Trace_File_tmp[30] = "sim.vcd";
+int  iTrace_Deep_tmp = 99;
+char SaveModel_File_tmp[20] = "test", SaveModel_File[20] = "test";
+
 
 vluint64_t main_time = 0;	// Current simulation time.
 double sc_time_stamp() {	// Called by $time in Verilog.
 	return main_time;
 }
+
+
+
+//Trace Save/Restore
+void save_model(const char* filenamep) {
+	VerilatedSave os;
+	os.open(filenamep);
+	os << main_time; // user code must save the timestamp, etc
+	os << *top;
+}
+void restore_model(const char* filenamep) {
+	VerilatedRestore os;
+	os.open(filenamep);
+	os >> main_time;
+	os >> *top;
+}
+
 
 SimClock clk_48(1); // 48mhz
 SimClock clk_12(4); // 12mhz
@@ -109,6 +137,12 @@ int verilate() {
 		if (clk_48.clk != clk_48.old) {
 			if (clk_48.clk) { bus.BeforeEval(); }
 			top->eval();
+
+			if (Trace) {
+				if (!tfp->isOpen()) tfp->open(Trace_File);
+				tfp->dump(main_time); //Trace
+			}
+
 			if (clk_48.clk) { bus.AfterEval(); }
 		}
 
@@ -128,6 +162,13 @@ int main(int argc, char** argv, char** env) {
 	// Create core and initialise
 	top = new Vtop();
 	Verilated::commandArgs(argc, argv);
+
+
+	//Prepare for Dump Signals
+	Verilated::traceEverOn(true); //Trace
+	top->trace(tfp, 1);// atoi(Trace_Deep) );  // Trace 99 levels of hierarchy
+	if (Trace) tfp->open(Trace_File);//"simx.vcd"); //Trace
+
 
 #ifdef WIN32
 	// Attach debug console to the verilated code
@@ -218,6 +259,32 @@ int main(int argc, char** argv, char** env) {
 		if (ImGui::Button("START")) { run_enable = 1; } ImGui::SameLine();
 		if (ImGui::Button("STOP")) { run_enable = 0; } ImGui::SameLine();
 		ImGui::Checkbox("RUN", &run_enable);
+
+		ImGui::Checkbox("Export VCD", &Trace); ImGui::SameLine();
+
+		if (ImGui::Button("FLUSH")) { tfp->flush(); } ImGui::SameLine();
+		ImGui::PushItemWidth(120);
+		//if (ImGui::Inputint("Deep Level", iTrace_Deep_tmp, IM_ARRAYSIZE(Trace_Deep), ImGuiInputTextFlags_EnterReturnsTrue))
+		if (ImGui::InputInt("Deep Level", &iTrace_Deep_tmp, 1, 100, ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			//strcpy(Trace_Deep, Trace_Deep_tmp); //TODO onChange, change Trace deep
+			top->trace(tfp, iTrace_Deep_tmp);
+			//top->trace(tfp, atoi(Trace_Deep));
+			//tfp->close();
+			//tfp->open(Trace_File);
+		} ImGui::SameLine();
+
+		if (ImGui::InputText("TraceFilename", Trace_File_tmp, IM_ARRAYSIZE(Trace_File), ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			strcpy(Trace_File, Trace_File_tmp); //TODO onChange Close and open new trace file
+			tfp->close();
+			if (Trace) tfp->open(Trace_File);
+		};// ImGui::SameLine();
+
+		
+		ImGui::PopItemWidth();
+		
+
 		ImGui::SliderInt("Batch size", &batchSize, 1, 1000000);
 
 		if (single_step == 1) { single_step = 0; }

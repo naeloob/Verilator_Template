@@ -9,11 +9,14 @@
 #define VERILATED_VTOP_H_  // guard
 
 #include "verilated_heavy.h"
+#include "verilated_save.h"
 #include "Vtop__Dpi.h"
 
 //==========
 
 class Vtop__Syms;
+class Vtop_VerilatedVcd;
+
 
 //----------
 
@@ -1082,6 +1085,7 @@ VL_MODULE(Vtop) {
     static VlUnpacked<CData/*0:0*/, 128> __Vtable3_top__DOT__uut__DOT__p6502__DOT__bc6502__DOT__takb;
     static VlUnpacked<CData/*7:0*/, 2048> __Vtable4_top__DOT__uut__DOT__pf_rom1__DOT__q;
     static VlUnpacked<CData/*7:0*/, 2048> __Vtable5_top__DOT__uut__DOT__pf_rom0__DOT__q;
+    VlUnpacked<CData/*0:0*/, 1> __Vm_traceActivity;
 
     // INTERNAL VARIABLES
     // Internals; generally not touched by application code
@@ -1137,6 +1141,8 @@ VL_MODULE(Vtop) {
       : Vtop(nullptr, name) {}
     /// Destroy the model; called (often implicitly) by application code
     ~Vtop();
+    /// Trace signals in the model; called by application code
+    void trace(VerilatedVcdC* tfp, int levels, int options = 0);
 
     // API METHODS
     /// Return current simulation context for this model.
@@ -1223,9 +1229,27 @@ VL_MODULE(Vtop) {
     static void _sequent__TOP__8(Vtop__Syms* __restrict vlSymsp);
     static void _sequent__TOP__9(Vtop__Syms* __restrict vlSymsp);
     static void _settle__TOP__2(Vtop__Syms* __restrict vlSymsp) VL_ATTR_COLD;
+  private:
+    static void traceChgSub0(void* userp, VerilatedVcd* tracep);
+    static void traceChgTop0(void* userp, VerilatedVcd* tracep);
+    static void traceCleanup(void* userp, VerilatedVcd* /*unused*/);
+    static void traceFullSub0(void* userp, VerilatedVcd* tracep) VL_ATTR_COLD;
+    static void traceFullTop0(void* userp, VerilatedVcd* tracep) VL_ATTR_COLD;
+    static void traceInitSub0(void* userp, VerilatedVcd* tracep) VL_ATTR_COLD;
+    static void traceInitTop(void* userp, VerilatedVcd* tracep) VL_ATTR_COLD;
+    void traceRegister(VerilatedVcd* tracep) VL_ATTR_COLD;
+    static void traceInit(void* userp, VerilatedVcd* tracep, uint32_t code) VL_ATTR_COLD;
+  public:
+    void __Vserialize(VerilatedSerialize& os);
+    void __Vdeserialize(VerilatedDeserialize& os);
 } VL_ATTR_ALIGNED(VL_CACHE_LINE_BYTES);
 
 //----------
 
+
+inline VerilatedSerialize& operator<<(VerilatedSerialize& os, Vtop& rhs) {
+    Verilated::quiesce(); rhs.__Vserialize(os); return os; }
+inline VerilatedDeserialize& operator>>(VerilatedDeserialize& os, Vtop& rhs) {
+    Verilated::quiesce(); rhs.__Vdeserialize(os); return os; }
 
 #endif  // guard

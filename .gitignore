@@ -1,5 +1,6 @@
 
 *.bak
+*.vcd
 .vs/*
 verilator/.vs/*
 verilator/x64/*
