@@ -279,9 +279,18 @@ int main(int argc, char** argv, char** env) {
 			strcpy(Trace_File, Trace_File_tmp); //TODO onChange Close and open new trace file
 			tfp->close();
 			if (Trace) tfp->open(Trace_File);
-		};// ImGui::SameLine();
+		} ImGui::SameLine();
 
-		
+		if (ImGui::Button("Save Model")) { save_model(SaveModel_File); } ImGui::SameLine();
+		if (ImGui::Button("Load Model")) {
+			restore_model(SaveModel_File);
+		} ImGui::SameLine();
+		if (ImGui::InputText("SaveFilename", SaveModel_File_tmp, IM_ARRAYSIZE(SaveModel_File), ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			strcpy(SaveModel_File, SaveModel_File_tmp); //TODO onChange Close and open new trace file
+		}
+
+
 		ImGui::PopItemWidth();
 		
 
