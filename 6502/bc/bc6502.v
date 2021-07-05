@@ -1110,8 +1110,10 @@ module dp_group2(ir,ldx,stxx,d,ci,ni,zi,c,n,z,o);
 
 	reg sc;		// shift carry
 	wire d_shift = ~ir[7];
-	
+
+ /* verilator lint_off LATCH */	
 	always @(ir or d or ci) begin
+/* verilator lint_on LATCH */    
 		case(ir[7:5])
 		`ASL:	begin
 				o = {d[DBW-2:0],1'b0};
